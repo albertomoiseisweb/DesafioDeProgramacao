@@ -1,9 +1,13 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class App {
-        // Classe Produto para representar os produtos no inventário
+    // Classe Produto para representar os produtos no inventário
     static class Produto {
         private int id; // Identificador único do produto
         private String nome; // Nome do produto
@@ -57,14 +61,38 @@ public class App {
             this.preco = preco;
         }
 
-    
+        // Falta fazer
+        // Representação do produto em formato legível
+        @Override
+        public String toString() {
+            return String.format("ID: %d | Nome: %s | Categoria: %s | Quantidade: %d | Preço: %.2f",
+                    id, nome, categoria, quantidade, preco);
+        }
+
+        // Converte o produto para uma linha CSV
+        public String toCsv() {
+            return id + "," + nome + "," + categoria + "," + quantidade + "," + preco;
+        }
+
+        // Falta fazer
+        // Cria um objeto Produto a partir de uma linha CSV
+        public static Produto fromCsv(String csvLine) {
+            String[] parts = csvLine.split(",");
+            return new Produto(
+                    Integer.parseInt(parts[0]),
+                    parts[1],
+                    parts[2],
+                    Integer.parseInt(parts[3]),
+                    Double.parseDouble(parts[4]));
+        }
     }
 
-    private static List<Produto> inventario = new ArrayList<>(); // Lista para armazenar os produtos
-    private static int nextId = 1; // Próximo ID a ser atribuído
-  
+    private static List<Produto> inventario = new ArrayList<>();
+    private static int nextId = 1;
+    private static final String FILE_PATH = "inventario.csv";
+
     public static void main(String[] args) {
-        
+        carregarDados();
         Scanner scanner = new Scanner(System.in);
         int opcao;
 
@@ -88,22 +116,22 @@ public class App {
                 case 2:
                     listarProdutos();
                     break;
-            
+
                 case 3:
                     atualizarProduto(scanner);
                     break;
                 case 4:
                     excluirProduto(scanner);
                     break;
-                 /*
+
                 case 5:
                     buscarProduto(scanner);
                     break;
                 case 6:
-                    salvarDados(); // Salva os dados antes de sair
+                    salvarDados();
                     System.out.println("Saindo do sistema. Até logo!");
                     break;
-                 */
+
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
             }
@@ -112,8 +140,8 @@ public class App {
         scanner.close(); // Fecha o scanner ao finalizar
     }
 
-      // Adiciona um novo produto ao inventário
-      private static void adicionarProduto(Scanner scanner) {
+    // Adiciona um novo produto ao inventário
+    private static void adicionarProduto(Scanner scanner) {
         System.out.print("Nome do Produto: ");
         String nome = scanner.nextLine();
         System.out.print("Categoria: ");
@@ -198,5 +226,56 @@ public class App {
         System.out.println("Produto excluído com sucesso!");
     }
 
+    // Busca produtos no inventário por ID ou nome
+    private static void buscarProduto(Scanner scanner) {
+        System.out.print("Buscar por ID ou Nome (1 para ID, 2 para Nome): ");
+        int escolha = scanner.nextInt();
+        scanner.nextLine();
+
+        if (escolha == 1) {
+            System.out.print("Informe o ID: ");
+            int id = scanner.nextInt();
+
+            Produto produto = inventario.stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+
+            if (produto == null) {
+                System.out.println("Produto não encontrado.");
+            } else {
+                System.out.println("Produto encontrado: " + produto);
+            }
+
+        } else if (escolha == 2) {
+            System.out.print("Informe o Nome ou parte do Nome: ");
+            String nome = scanner.nextLine();
+
+            List<Produto> resultados = inventario.stream()
+                    .filter(p -> p.getNome().toLowerCase().contains(nome.toLowerCase()))
+                    .collect(Collectors.toList());
+
+            if (resultados.isEmpty()) {
+                System.out.println("Nenhum produto encontrado.");
+            } else {
+                System.out.println("Produtos encontrados:");
+                for (Produto produto : resultados) {
+                    System.out.println(produto);
+                }
+            }
+
+        } else {
+            System.out.println("Opção inválida.");
+        }
+    }
+
+    // Salva os dados do inventário no arquivo CSV
+    private static void salvarDados() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+            for (Produto produto : inventario) {
+                writer.write(produto.toCsv());
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar os dados: " + e.getMessage());
+        }
+    }
 
 }
