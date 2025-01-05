@@ -88,14 +88,14 @@ public class App {
                 case 2:
                     listarProdutos();
                     break;
-                /*
-                
+            
                 case 3:
                     atualizarProduto(scanner);
                     break;
                 case 4:
                     excluirProduto(scanner);
                     break;
+                 /*
                 case 5:
                     buscarProduto(scanner);
                     break;
@@ -140,5 +140,63 @@ public class App {
             System.out.println(produto);
         }
     }
+
+    // Atualiza as informações de um produto existente
+    private static void atualizarProduto(Scanner scanner) {
+        System.out.print("Informe o ID do produto a ser atualizado: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Produto produto = inventario.stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+
+        if (produto == null) {
+            System.out.println("Produto não encontrado.");
+            return;
+        }
+
+        System.out.println("Produto encontrado: " + produto);
+        System.out.print("Novo Nome (deixe em branco para manter): ");
+        String nome = scanner.nextLine();
+        if (!nome.isBlank()) {
+            produto.setNome(nome);
+        }
+
+        System.out.print("Nova Categoria (deixe em branco para manter): ");
+        String categoria = scanner.nextLine();
+        if (!categoria.isBlank()) {
+            produto.setCategoria(categoria);
+        }
+
+        System.out.print("Nova Quantidade (deixe em branco para manter): ");
+        String quantidadeStr = scanner.nextLine();
+        if (!quantidadeStr.isBlank()) {
+            produto.setQuantidade(Integer.parseInt(quantidadeStr));
+        }
+
+        System.out.print("Novo Preço (deixe em branco para manter): ");
+        String precoStr = scanner.nextLine();
+        if (!precoStr.isBlank()) {
+            produto.setPreco(Double.parseDouble(precoStr));
+        }
+
+        System.out.println("Produto atualizado com sucesso!");
+    }
+
+    // Remove um produto do inventário
+    private static void excluirProduto(Scanner scanner) {
+        System.out.print("Informe o ID do produto a ser excluído: ");
+        int id = scanner.nextInt();
+
+        Produto produto = inventario.stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+
+        if (produto == null) {
+            System.out.println("Produto não encontrado.");
+            return;
+        }
+
+        inventario.remove(produto);
+        System.out.println("Produto excluído com sucesso!");
+    }
+
 
 }

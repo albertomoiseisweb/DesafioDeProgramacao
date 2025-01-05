@@ -6,7 +6,7 @@
 ## Primeira Etapa CRUD Básico no Inventário
 
 - Criar Construtor e métodos gets e sets;
-- Tarefa: Implementar as operações básicas do CRUD (Adicionar "Feito", Listar "Feito", Atualizar, Excluir).
+- Tarefa: Implementar as operações básicas do CRUD (Adicionar "Feito", Listar "Feito", Atualizar "Feito", Excluir "Feito", BuscarProduto).
 
 Entrega:
 -- Implementar e testar os métodos adicionarProduto, listarProdutos, atualizarProduto, excluirProduto.
