@@ -1,4 +1,7 @@
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,13 +89,14 @@ public class App {
                     Double.parseDouble(parts[4]));
         }
     }
-
-    private static List<Produto> inventario = new ArrayList<>();
-    private static int nextId = 1;
-    private static final String FILE_PATH = "inventario.csv";
-
+// Lista para armazenar os produtos
+    private static List<Produto> inventario = new ArrayList<>(); 
+    // Próximo ID a ser atribuíd
+    private static int nextId = 1; 
+    // Caminho do arquivo CSV
+    private static final String FILE_PATH = "inventario.csv"; 
     public static void main(String[] args) {
-        carregarDados();
+        carregarDados(); // Carrega os dados do arquivo CSV ao iniciar
         Scanner scanner = new Scanner(System.in);
         int opcao;
 
@@ -116,22 +120,19 @@ public class App {
                 case 2:
                     listarProdutos();
                     break;
-
                 case 3:
                     atualizarProduto(scanner);
                     break;
                 case 4:
                     excluirProduto(scanner);
                     break;
-
                 case 5:
                     buscarProduto(scanner);
                     break;
                 case 6:
-                    salvarDados();
+                    salvarDados(); // Salva os dados antes de sair
                     System.out.println("Saindo do sistema. Até logo!");
                     break;
-
                 default:
                     System.out.println("Opção inválida. Tente novamente.");
             }
@@ -278,4 +279,22 @@ public class App {
         }
     }
 
+    // Carrega os dados do arquivo CSV para o inventário
+    private static void carregarDados() {
+        File file = new File(FILE_PATH);
+        if (!file.exists()) {
+            return;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Produto produto = Produto.fromCsv(line);
+                inventario.add(produto);
+                nextId = Math.max(nextId, produto.getId() + 1);
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao carregar os dados: " + e.getMessage());
+        }
+    }
 }
